@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Профиль</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.bio.label }}<br>
+        {{ form.bio(rows=4, cols=60) }}<br>
+        {{ form.submit() }}
+    </form>
+    <p><a href="{{ url_for('dashboard') }}">Назад</a></p>
+{% endblock %}

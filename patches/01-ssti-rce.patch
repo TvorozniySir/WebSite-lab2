@@ -1,0 +1,33 @@
+# Патч 1/3: SSTI -> RCE
+# patch -p1 < patches/01-ssti-rce.patch
+
+--- a/app.py	2026-11-14 01:09:45.267626707 +0000
++++ b/app.py	2026-11-14 01:11:11.096564232 +0000
+@@ -1,5 +1,5 @@
+ from flask import (
+-    Flask, redirect, render_template, render_template_string, request, url_for, abort, flash
++    Flask, redirect, render_template, request, url_for, abort, flash
+ )
+ from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+ from flask_wtf import CSRFProtect
+@@ -63,8 +63,7 @@
+ @app.route("/dashboard")
+ @login_required
+ def dashboard():
+-    bio_html = render_template_string(current_user.bio or "")
+-    return render_template("dashboard.html", bio_html=bio_html)
++    return render_template("dashboard.html", bio=current_user.bio or "")
+ 
+ 
+ @app.route("/profile", methods=["GET", "POST"])
+--- a/templates/dashboard.html	2026-11-13 10:01:07.000000000 +0000
++++ b/templates/dashboard.html	2026-11-14 01:10:29.685250696 +0000
+@@ -8,7 +8,7 @@
+ 
+     <div class="bio-box">
+         <h3>О себе</h3>
+-        <div>{{ bio_html|safe }}</div>
++        <div>{{ bio }}</div>
+     </div>
+ 
+     <p><a href="{{ url_for('profile') }}">Редактировать профиль</a></p>

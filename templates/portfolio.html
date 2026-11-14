@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Портфель</h2>
+    {% if holdings %}
+    <table>
+        <tr><th>Актив</th><th>Количество</th></tr>
+        {% for h in holdings %}
+        <tr>
+            <td>{{ h["asset"] }}</td>
+            <td>{{ h["amount"] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>Портфель пуст — сделай первую покупку на странице «Ордер».</p>
+    {% endif %}
+{% endblock %}

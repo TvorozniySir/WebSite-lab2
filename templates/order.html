@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Создать ордер</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.asset.label }} {{ form.asset() }}<br>
+        {{ form.order_type.label }} {{ form.order_type() }}<br>
+        {{ form.amount.label }} {{ form.amount() }}<br>
+        {{ form.price.label }} {{ form.price() }}<br>
+        {{ form.submit() }}
+    </form>
+{% endblock %}

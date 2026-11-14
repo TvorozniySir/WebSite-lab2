@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>История ордеров</h2>
+    <table>
+        <tr><th>Актив</th><th>Тип</th><th>Количество</th><th>Цена</th><th>Время</th></tr>
+        {% for o in orders %}
+        <tr>
+            <td>{{ o["asset"] }}</td>
+            <td class="{{ o['order_type'] }}">{{ o["order_type"] }}</td>
+            <td>{{ o["amount"] }}</td>
+            <td>{{ o["price"] }}</td>
+            <td>{{ o["timestamp"] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Админ-панель</h2>
+    <p>Эта страница доступна только администраторам.</p>
+    <table>
+        <tr><th>ID</th><th>Username</th><th>Role</th><th>Balance</th></tr>
+        {% for u in users %}
+        <tr>
+            <td>{{ u["id"] }}</td>
+            <td>{{ u["username"] }}</td>
+            <td>{{ u["role"] }}</td>
+            <td>{{ u["balance"] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

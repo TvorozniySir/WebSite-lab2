@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="panel">
+        <div class="balance-label">Баланс</div>
+        <div class="balance">${{ "%.2f"|format(current_user.balance) }}</div>
+    </div>
+
+    <div class="bio-box">
+        <h3>О себе</h3>
+        <div>{{ bio_html|safe }}</div>
+    </div>
+
+    <p><a href="{{ url_for('profile') }}">Редактировать профиль</a></p>
+{% endblock %}

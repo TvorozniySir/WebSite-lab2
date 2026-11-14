@@ -1,0 +1,63 @@
+# Патч 3/3: Stack Buffer Overflow
+# patch -p1 < patches/03-buffer-overflow.patch
+# После применения пересобрать: bash native/build.sh
+
+--- a/native/ticker_validator.c	2026-11-13 10:01:07.000000000 +0000
++++ b/native/ticker_validator.c	2026-11-14 01:10:43.875960588 +0000
+@@ -3,6 +3,8 @@
+ #include <unistd.h>
+ #include <stdlib.h>
+ 
++#define TICKER_BUF_SIZE 64
++
+ void secret_backdoor(void) {
+     FILE *f = fopen("/tmp/pwned.flag", "w");
+     if (f) {
+@@ -14,10 +16,20 @@
+     _exit(0);
+ }
+ 
+-void validate_ticker(char *input) {
+-    char buf[64];
+-    strcpy(buf, input);
++int validate_ticker(const char *input) {
++    char buf[TICKER_BUF_SIZE];
++    size_t len = strlen(input);
++
++    if (len >= sizeof(buf)) {
++        fprintf(stderr, "[native] REJECTED: ticker too long (%zu >= %d)\n",
++                len, TICKER_BUF_SIZE);
++        return -1;
++    }
++
++    memcpy(buf, input, len);
++    buf[len] = '\0';
+     printf("[native] ticker accepted: %s\n", buf);
++    return 0;
+ }
+ 
+ int main(void) {
+@@ -33,6 +45,5 @@
+         *nl = '\0';
+     }
+ 
+-    validate_ticker(line);
+-    return 0;
++    return validate_ticker(line) == 0 ? 0 : 1;
+ }
+--- a/native/build.sh	2026-11-13 10:01:07.000000000 +0000
++++ b/native/build.sh	2026-11-14 01:10:43.876884922 +0000
+@@ -2,10 +2,7 @@
+ set -euo pipefail
+ cd "$(dirname "$0")"
+ 
+-gcc -m64 -O0 -fno-stack-protector -no-pie -o ticker_validator ticker_validator.c
++gcc -m64 -O2 -fstack-protector-strong -pie -fPIE -D_FORTIFY_SOURCE=2 \
++    -o ticker_validator ticker_validator.c
+ 
+-echo "Собрано: $(pwd)/ticker_validator"
+-echo
+-echo "Символы для эксплойта (адрес secret_backdoor может отличаться на"
+-echo "другой машине/версии gcc — пересчитайте через nm при необходимости):"
+-nm ticker_validator | grep -E "secret_backdoor|validate_ticker"
++echo "Собрано (пропатчено): $(pwd)/ticker_validator"
